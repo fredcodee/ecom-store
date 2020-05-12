@@ -1,13 +1,27 @@
-from flask_login import UserMixin
 from datetime import datetime
 from app import db
 
 
-class User(UserMixin, db.Model):
+class Products(db.Model):
   id = db.Column(db.Integer, primary_key=True)
-  email = db.Column(db.String(120), unique=True, nullable=False)
-  name = db.Column(db.String(300), nullable=False)
-  password = db.Column(db.String(100), nullable=False)
+  name = db.Column(db.String(), nullable=False)
+  stock= db.Column(db.Integer)
+  price = db.Column(db.Integer)
+  description = db.Column(db.String)
+  orders = db.relationship('Order', backref='activity', lazy=True)
 
   def __repr__(self):
-    return('<User %r>' % (self.username))
+    return('<Product- %r>' % (self.name))
+
+class Order(db.Model):
+  id = db.Column(db.Integer, primary_key=True)
+  order_num = db.Column(db.String, nullable=False)
+  name = db.Column(db.String(300), nullable=False)
+  shipping_address = db.Column(db.String)
+  country = db.Column(db.String)
+  quantity = db.Column(db.Integer)
+  method = db.Column(db.String)
+  payment_option = db.Column(db.String)
+  product_id = db.Column(db.Integer, db.ForeignKey("products.id"), nullable=False)
+  checklist = db.Column(db.Boolean)
+
