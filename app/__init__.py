@@ -6,7 +6,7 @@ from flask_admin import Admin
 
 db = SQLAlchemy()
 migrate = Migrate()
-admin= Admin()
+admin = Admin(template_mode='bootstrap3')
 
 def create_app():
   app = Flask(__name__)
@@ -23,5 +23,9 @@ def create_app():
   # blueprint for non-auth parts of app
   from app.main import main as main_blueprint
   app.register_blueprint(main_blueprint)
+
+  # Add the admin panel
+  from app.admin import bp as admin_bp
+  app.register_blueprint(admin_bp)
 
   return(app)
