@@ -2,12 +2,14 @@ from datetime import datetime
 from app import db
 
 
-class Products(db.Model):
+class Product(db.Model):
+  __tablename__ = 'product'
   id = db.Column(db.Integer, primary_key=True)
   name = db.Column(db.String(), nullable=False)
   stock= db.Column(db.Integer)
   price = db.Column(db.Integer)
   description = db.Column(db.String)
+  pic = db.Column(db.LargeBinary(), nullable=False)
   orders = db.relationship('Order', backref='activity', lazy=True)
 
   def __repr__(self):
@@ -22,6 +24,6 @@ class Order(db.Model):
   quantity = db.Column(db.Integer)
   method = db.Column(db.String)
   payment_option = db.Column(db.String)
-  product_id = db.Column(db.Integer, db.ForeignKey("products.id"), nullable=False)
+  product_id = db.Column(db.Integer, db.ForeignKey("product.id"), nullable=False)
   checklist = db.Column(db.Boolean)
 
