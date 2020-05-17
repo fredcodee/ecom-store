@@ -9,7 +9,7 @@ class Product(db.Model):
   stock= db.Column(db.Integer)
   price = db.Column(db.Integer)
   description = db.Column(db.String(500))
-  image = db.Column(db.String(100))
+  image = db.Column(db.String(500))
   orders = db.relationship('Order', backref='activity', lazy=True)
 
   def __repr__(self):

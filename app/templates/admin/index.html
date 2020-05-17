@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Admin Dashboard | Trendy Fashion Store{% endblock %}
+{% block title %}Admin Dashboard | Mens Choice{% endblock %}
 
 {% block body %}
 <div class="row pad">
@@ -95,36 +95,15 @@
 						</tr>
 					</thead>
 					<tbody>
+						{% for product in products %}
 						<tr>
-							<td>1</td>
-							<td>Classic Blouse</td>
-							<td>&dollar;35.99</td>
-							<td>45 units</td>
+							<td>{{ product.id}}</td>
+							<td>{{ product.name}}</td>
+							<td>&dollar;{{ product.price}}
+							</td>
+							<td>{{ product.stock}} units</td>
 						</tr>
-						<tr>
-							<td>2</td>
-							<td>Printed Dress</td>
-							<td>&dollar;23.99</td>
-							<td>25 units</td>
-						</tr>
-						<tr>
-							<td>3</td>
-							<td>Summer Gown</td>
-							<td>&dollar;45.99</td>
-							<td>33 units</td>
-						</tr>
-						<tr>
-							<td>4</td>
-							<td>Summer Printed Dress</td>
-							<td>&dollar;35.99</td>
-							<td>11 units</td>
-						</tr>
-						<tr>
-							<td>5</td>
-							<td>Faded Shorts</td>
-							<td>&dollar;15.99</td>
-							<td>3 units</td>
-						</tr>
+						{% endfor %}
 					</tbody>
 				</table>
 			</div>

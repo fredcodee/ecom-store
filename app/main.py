@@ -1,5 +1,5 @@
-from flask import Flask, Blueprint, redirect, render_template, request, flash, jsonify, url_for, abort
-from app.models import Product,Order
+from flask import Flask, Blueprint, redirect, render_template, request, flash, url_for
+from app.models import Product, Order
 from app import db, photos
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, TextAreaField
@@ -20,12 +20,14 @@ class AddProduct(FlaskForm):
 #routes
 @main.route("/", methods=['POST', 'GET'])
 def home():
-  pass
+  return(render_template('base.html'))
 
 
 @main.route('/admin')
 def admin():
-  return(render_template('admin/index.html', admin = True))
+  products = Product.query.all()
+
+  return(render_template('admin/index.html', admin=True, products=products))
 
 
 @main.route('/admin/add', methods=["GET","POST"])
