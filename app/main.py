@@ -8,7 +8,7 @@ from flask_uploads import IMAGES
 
 main = Blueprint('main', __name__)
 
-#product form
+#add product form
 class AddProduct(FlaskForm):
   name = StringField('Name')
   price = IntegerField('Price')
@@ -18,16 +18,18 @@ class AddProduct(FlaskForm):
                     FileAllowed(IMAGES, 'only images accepted.')])
 
 #routes
-@main.route("/", methods=['POST', 'GET'])
+@main.route("/")
 def home():
   return(render_template('base.html'))
 
 
-@main.route('/admin')
+@main.route('/admin/home')
 def admin():
   products = Product.query.all()
+  products_in_stock = Product.query.filter(Product.stock > 0).count()
+  products_out_stock = Product.query.filter(Product.stock == 0).count()
 
-  return(render_template('admin/index.html', admin=True, products=products))
+  return(render_template('admin/index.html', admin=True, products=products, products_in_stock=products_in_stock, products_out_stock=products_out_stock))
 
 
 @main.route('/admin/add', methods=["GET","POST"])
