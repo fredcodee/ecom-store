@@ -20,7 +20,19 @@ class AddProduct(FlaskForm):
 #routes
 @main.route("/")
 def home():
-  return(render_template('base.html'))
+  products = Product.query.all()
+
+  return(render_template('index.html', products=products))
+
+
+@main.route('/product/<idd>')
+def product(idd):
+  pass
+
+
+@main.route('/cart')
+def cart():
+  pass
 
 
 @main.route('/admin/home')
@@ -44,3 +56,13 @@ def add():
     return(redirect(url_for('main.admin')))
 
   return(render_template('admin/add-product.html', admin=True, form= form))
+
+
+from flask import send_from_directory
+
+
+"""@main.route('/uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'],
+                               filename)
+"""
