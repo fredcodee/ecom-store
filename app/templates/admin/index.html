@@ -102,6 +102,7 @@
 								<td>&dollar;{{ product.price}}
 								</td>
 								<td>{{ product.stock}} units</td>
+								<td><a href="/admin/delete/{{product.id}}"><button class="badge">Delete</button></a></td>
 							</tr>
 						{% endfor %}
 					</tbody>

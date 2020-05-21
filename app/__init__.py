@@ -11,7 +11,7 @@ migrate = Migrate()
 def create_app():
   app = Flask(__name__)
 
-  app.config['UPLOADED_PHOTOS_DEST']='images'
+  app.config['UPLOADED_PHOTOS_DEST']='app/static/productimages'
   app.config['SECRET_KEY'] = '2020plsbebetter'
   app.config['SQLALCHEMY_DATABASE_URI'] = "postgres://awmtkzvxewzxkn:28bce3779603ee267b22be337ea5b5372079d4d6a858f2c6e851368dd8f5a6eb@ec2-52-202-22-140.compute-1.amazonaws.com:5432/ddqtm244hd7q32"
   app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False

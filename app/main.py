@@ -1,6 +1,6 @@
 from flask import Flask, Blueprint, redirect, render_template, request, flash, url_for
 from app.models import Product, Order
-from app import db, photos
+from app import db, photos, create_app
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, TextAreaField
 from flask_wtf.file import FileField, FileAllowed
@@ -48,21 +48,18 @@ def admin():
 def add():
   form = AddProduct()
   if form.validate_on_submit():
-    image_url = photos.url(photos.save(form.image.data))
     new_product = Product(name=form.name.data,
-                          stock=form.stock.data, price=form.price.data,description=form.description.data,image=image_url )
+                          stock=form.stock.data, price=form.price.data, description=form.description.data, image=photos.save(form.image.data))
     db.session.add(new_product)
     db.session.commit()
     return(redirect(url_for('main.admin')))
 
   return(render_template('admin/add-product.html', admin=True, form= form))
 
-
-from flask import send_from_directory
-
-
-"""@main.route('/uploads/<filename>')
-def uploaded_file(filename):
-    return send_from_directory(app.config['UPLOAD_FOLDER'],
-                               filename)
-"""
+#delete product inventory
+@main.route('/admin/delete/<id>')
+def delete(id):
+  get_p = Product.query.get(int(id))
+  db.session.delete(get_p)
+  db.session.commit()
+  return(redirect(url_for('main.admin')))
