@@ -66,10 +66,10 @@
 						</p>
 						<hr />
 						<p>
-							<a href="#" class="btn btn-primary btn-sm">
+							<a href="{{url_for('main.product', idd=product.id)}}" class="btn btn-primary btn-sm">
 								<i class="glyphicon glyphicon-eye-open"></i> View
 							</a>
-							<a href="#" class="btn btn-default btn-sm">
+							<a href="{{ url_for('main.quick_add', id=product.id) }}" class="btn btn-default btn-sm">
 								<i class="glyphicon glyphicon-shopping-cart"></i> Add To Cart
 							</a>
 						</p>
