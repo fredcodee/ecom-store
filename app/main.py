@@ -1,10 +1,11 @@
 from flask import Flask, Blueprint, redirect, render_template, request, flash, url_for,session
-from app.models import Product, Order
+from app.models import Product, Order, Order_Item
 from app import db, photos, create_app
 from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, TextAreaField, HiddenField
+from wtforms import StringField, IntegerField, TextAreaField, HiddenField, SelectField
 from flask_wtf.file import FileField, FileAllowed
 from flask_uploads import IMAGES
+import random
 
 main = Blueprint('main', __name__)
 
@@ -16,6 +17,20 @@ class AddProduct(FlaskForm):
   description = TextAreaField('Description')
   image = FileField('image', validators=[
                     FileAllowed(IMAGES, 'only images accepted.')])
+
+#checkoutform
+
+
+class Checkout(FlaskForm):
+  first_name = StringField('First Name')
+  last_name = StringField('Last Name')
+  phone_number = StringField('Number')
+  email = StringField('Email')
+  address = StringField('Address')
+  city = StringField('City')
+  state = SelectField('State', choices=[('CA', 'California'), ('WA', 'Washington'), ('NV', 'Nevada')])
+  country = SelectField('Country', choices=[('US', 'United States'), ('UK', 'United Kingdom'), ('FRA', 'France')])
+  payment_type = SelectField('Payment Type', choices=[('CK', 'Check'), ('WT', 'Wire Transfer')])
 
 #cart
 class AddToCart(FlaskForm):
@@ -62,15 +77,73 @@ def add_to_cart():
 
   return (redirect(url_for('main.home')))
 
-@main.route('/cart/<id>')
-def cart(id):
-  print(session['cart'])
-  return(render_template('cart.html'))
+
+def handle_cart():
+  products = []
+  grand_total = 0
+  index = 0
+  quantity_total = 0
+
+  for item in session['cart']:
+    product = Product.query.get(item['id'])
+
+    quantity = int(item['quantity'])
+    total = quantity * product.price
+    grand_total += total
+
+    quantity_total += quantity
+
+    products.append({'id': product.id, 'name': product.name, 'price':  product.price,
+                     'image': product.image, 'quantity': quantity, 'total': total, 'index': index})
+
+    index += 1
+
+  grand_total_plus_shipping = grand_total + 1000
+
+  return(products, grand_total, grand_total_plus_shipping, quantity_total)
+
+@main.route('/cart')
+def cart():
+  products, grand_total, grand_total_plus_shipping,quantity_total = handle_cart()
+
+  return (render_template('cart.html', products=products, grand_total=grand_total, grand_total_plus_shipping=grand_total_plus_shipping, quantity_total=quantity_total))
 
 
-@main.route('/checkout')
+@main.route('/remove-from-cart/<index>')
+def remove_from_cart(index):
+  del session['cart'][int(index)]
+  session.modified = True
+  return redirect(url_for('main.cart'))
+
+
+@main.route('/checkout', methods=['GET', 'POST'])
 def checkout():
-    return (render_template('checkout.html'))
+  form = Checkout()
+
+  products, grand_total, grand_total_plus_shipping, quantity_total = handle_cart()
+
+  if form.validate_on_submit():
+
+    order = Order()
+    form.populate_obj(order)
+    order.reference = ''.join([random.choice('ABCDE') for _ in range(5)])
+    order.status = 'PENDING'
+
+    for product in products:
+      order_item = Order_Item(quantity=product['quantity'], product_id=product['id'])
+      order.items.append(order_item)
+
+      product = Product.query.filter_by(id=product['id']).update({'stock': Product.stock - product['quantity']})
+
+    db.session.add(order)
+    db.session.commit()
+
+    session['cart'] = []
+    session.modified = True
+
+    return (redirect(url_for('index')))
+
+  return (render_template('checkout.html', form=form, grand_total=grand_total, grand_total_plus_shipping=grand_total_plus_shipping, quantity_total=quantity_total))
 
 
 #Admin route
@@ -80,7 +153,9 @@ def admin():
   products_in_stock = Product.query.filter(Product.stock > 0).count()
   products_out_stock = Product.query.filter(Product.stock == 0).count()
 
-  return(render_template('admin/index.html', admin=True, products=products, products_in_stock=products_in_stock, products_out_stock=products_out_stock))
+  orders = Order.query.all()
+
+  return(render_template('admin/index.html', admin=True, products=products, products_in_stock=products_in_stock, products_out_stock=products_out_stock, orders=orders))
 
 #add products to inventory
 @main.route('/admin/add', methods=["GET","POST"])
