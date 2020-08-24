@@ -3,7 +3,7 @@ a simple mini ecom store built with flask and boostrap
 
 ## Tools:
 - Python(flask)
-- boostrap
+- bootstrap
 - view requirements file to see more
 
 ## website preview
